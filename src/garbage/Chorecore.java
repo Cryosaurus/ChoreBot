@@ -114,12 +114,12 @@ public class Chorecore implements IListener<MessageEvent>{
 		ZonedDateTime zonedNext;
 		
 		//zonedNext = zonedNow.withHour(hour).withMinute(min).withSecond(sec);
-		zonedNext = zonedNow.withMinute(min).withSecond(sec);
+		zonedNext = zonedNow.plusHours(hour).plusMinutes(min).plusSeconds(sec);
 		if((zonedNow.compareTo(zonedNext) > 0) && (dayInterval > 0)){
 			zonedNext = zonedNext.plusDays(dayInterval);
 		}
 		
-		Duration duration = Duration.between(zonedNext, zonedNow);
+		Duration duration = Duration.between(zonedNow, zonedNext);
 		long initialDelay = duration.getSeconds();
 		System.out.println("Initial delay of: " + initialDelay);
 		

@@ -32,7 +32,7 @@ public class Chorecommand {
 		
         switch (check) {
         case "!commands":
-        	com = "I have no other commands at the moment";
+        	com = "I do nothing but say I do nothing and remind you to take the garbage out at 6PM on thursdays... assuming I'm running then";
         	System.out.println("yay");
         	break;
         default:

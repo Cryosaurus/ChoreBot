@@ -46,7 +46,7 @@ public class Chorecore implements IListener<MessageEvent>{
 
 		INSTANCE = login(args[0]); // Creates the bot instance and logs it in.
 		
-		resetGarbage(0, 0, 1, 0);
+		resetGarbage(1, 18, 0, 0);
 	}
 
 	public Chorecore(IDiscordClient client) {
@@ -113,8 +113,8 @@ public class Chorecore implements IListener<MessageEvent>{
 		ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
 		ZonedDateTime zonedNext;
 		
-		//zonedNext = zonedNow.withHour(hour).withMinute(min).withSecond(sec);
-		zonedNext = zonedNow.plusHours(hour).plusMinutes(min).plusSeconds(sec);
+		zonedNext = zonedNow.withHour(hour).withMinute(min).withSecond(sec);
+		//zonedNext = zonedNow.plusHours(hour).plusMinutes(min).plusSeconds(sec); //test line
 		if((zonedNow.compareTo(zonedNext) > 0) && (dayInterval > 0)){
 			zonedNext = zonedNext.plusDays(dayInterval);
 		}
@@ -124,8 +124,8 @@ public class Chorecore implements IListener<MessageEvent>{
 		System.out.println("Initial delay of: " + initialDelay);
 		
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);            
-		//scheduler.scheduleAtFixedRate(new Chorereminder(), initalDelay, 24*60*60, TimeUnit.SECONDS);
-		scheduler.scheduleAtFixedRate(new Chorereminder(), 60, 60, TimeUnit.SECONDS);
+		scheduler.scheduleAtFixedRate(new Chorereminder(), initialDelay, 24*60*60, TimeUnit.SECONDS);
+		//scheduler.scheduleAtFixedRate(new Chorereminder(), 60, 60, TimeUnit.SECONDS); //test line
 	}
 	
 	public static void reminder(){

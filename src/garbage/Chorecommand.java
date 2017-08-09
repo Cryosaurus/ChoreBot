@@ -35,6 +35,9 @@ public class Chorecommand {
         	com = "I do nothing but say I do nothing and remind you to take the garbage out at 6PM on thursdays... assuming I'm running then";
         	System.out.println("yay");
         	break;
+        case "!chorecorebo":
+        	com = "Congratulations you found a secret command, have a chocobo. http://i.imgur.com/xi8Tvmh.png";
+        	break;
         default:
         	com = "";
         	System.out.println("sadness");

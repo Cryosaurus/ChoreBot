@@ -113,28 +113,27 @@ public class Chorecore implements IListener<MessageEvent>{
 		ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
 		ZonedDateTime zonedNext;
 		
-		zonedNext = zonedNow.withHour(hour).withMinute(min).withSecond(sec);
-		//zonedNext = zonedNow.plusHours(hour).plusMinutes(min).plusSeconds(sec); //test line
-		if((zonedNow.compareTo(zonedNext) > 0) && (dayInterval > 0)){
-			zonedNext = zonedNext.plusDays(dayInterval);
-		}
+//		zonedNext = zonedNow.withHour(hour).withMinute(min).withSecond(sec);
+		zonedNext = zonedNow.plusHours(hour).plusMinutes(min).plusSeconds(sec); //test line
+//		if((zonedNow.compareTo(zonedNext) > 0) && (dayInterval > 0)){
+//			zonedNext = zonedNext.plusDays(dayInterval);
+//		}
 		
 		Duration duration = Duration.between(zonedNow, zonedNext);
 		long initialDelay = duration.getSeconds();
 		System.out.println("Initial delay of: " + initialDelay);
 		
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);            
-		scheduler.scheduleAtFixedRate(new Chorereminder(), initialDelay, 24*60*60, TimeUnit.SECONDS);
-		//scheduler.scheduleAtFixedRate(new Chorereminder(), 60, 60, TimeUnit.SECONDS); //test line
+//		scheduler.scheduleAtFixedRate(new Chorereminder(), initialDelay, 24*60*60, TimeUnit.SECONDS);
+		scheduler.scheduleAtFixedRate(new Chorereminder(), 60, 60, TimeUnit.SECONDS); //test line
 	}
 	
-	public static void reminder(){
+	public static void reminder(String message){
 		//Workaround for the static problem
 		IDiscordClient tempClient = INSTANCE.getClient();
-		String reply = "Testing out this garbage";
 		try {
 			// Builds (sends) and new message in the channel that the original message was sent with the content of the original message.
-			new MessageBuilder(tempClient).withChannel(test1).withContent(reply).build();
+			new MessageBuilder(tempClient).withChannel(test1).withContent(message).build();
 		} catch (RateLimitException e) { // RateLimitException thrown. The bot is sending messages too quickly!
 			System.err.print("Sending messages too quickly!");
 			e.printStackTrace();

@@ -1,12 +1,16 @@
 package garbage;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 
 /*
  * In a proper OOP deign this should not exist
@@ -17,32 +21,114 @@ import java.util.concurrent.TimeUnit;
 public class Chorecommand {
 
 	public static String parse(String msg){
-		String com = msg.substring(0, 1);
-		if (com.equals("!")){
-			com = msg.split(" ",2)[0];
-			com = checkList(com);
+		String reply = msg.substring(0, 1);
+		
+		if (reply.equals("!")){
+			reply = msg.split(" ",2)[0];
+			reply = checkList(reply, msg);
 		}else{
-			com = "";
+			reply = "";
 		}
-		return com;
+		
+		return reply;
 	}
 	
-	private static String checkList(String check){
-		String com;
+	private static String checkList(String check, String full){
+		String reply = "";
 		
         switch (check) {
         case "!commands":
-        	com = "I do nothing but say I do nothing and remind you to take the garbage out at 6PM on thursdays... assuming I'm running then";
+        	reply = "!add NAME - adds person to list of tenants for house\n" + 
+        		  "!remove NAME - removes person from list of tenants for house\n" + 
+        		  "!rent NAME BOOL -Sets whether or not NAMe has paid rent for the month based on the value of BOOL. Requires manager privelege.";
         	System.out.println("yay");
         	break;
+        case "!add":
+        	reply = addTenant(full);
+        	break;
+        case "!remove":
+        	reply = removeTenant(full);
+        	break;
+        case "!rent":
+        	reply = processRent(full);
+        	break;
         case "!chorecorebo":
-        	com = "Congratulations you found a secret command, have a chocobo. http://i.imgur.com/xi8Tvmh.png";
+        	reply = "Congratulations you found a secret command, have a chocobo. http://i.imgur.com/xi8Tvmh.png";
         	break;
         default:
-        	com = "";
+        	reply = "";
         	System.out.println("sadness");
         }
 		
-		return com;
+		return reply;
+	}
+
+	private static String processRent(String full) {
+		Gson gson = new GsonBuilder().create();
+		ArrayList<Choreperson> ban = new ArrayList<Choreperson>();
+		JsonReader reader;
+		Writer writer;
+		try {
+			reader = new JsonReader(new FileReader("tenants.json"));
+			Type collectionType = new TypeToken<ArrayList<Choreperson>>(){}.getType();
+			ban = gson.fromJson(reader, collectionType);
+			reader.close();
+			
+			//TODO STUFF
+			
+			writer = new FileWriter("tenants.json");
+			gson.toJson(ban, writer);
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return "thing";
+	}
+
+	private static String removeTenant(String full) {
+		Gson gson = new GsonBuilder().create();
+		ArrayList<Choreperson> ban = new ArrayList<Choreperson>();
+		JsonReader reader;
+		Writer writer;
+		try {
+			reader = new JsonReader(new FileReader("tenants.json"));
+			Type collectionType = new TypeToken<ArrayList<Choreperson>>(){}.getType();
+			ban = gson.fromJson(reader, collectionType);
+			reader.close();
+			
+			//TODO STUFF
+			
+			writer = new FileWriter("tenants.json");
+			gson.toJson(ban, writer);
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return "thing";
+	}
+
+	private static String addTenant(String full) {
+		Gson gson = new GsonBuilder().create();
+		ArrayList<Choreperson> ban = new ArrayList<Choreperson>();
+		JsonReader reader;
+		Writer writer;
+		try {
+			reader = new JsonReader(new FileReader("tenants.json"));
+			Type collectionType = new TypeToken<ArrayList<Choreperson>>(){}.getType();
+			ban = gson.fromJson(reader, collectionType);
+			reader.close();
+			
+			//TODO STUFF
+			
+			writer = new FileWriter("tenants.json");
+			gson.toJson(ban, writer);
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return "thing";
 	}
 }

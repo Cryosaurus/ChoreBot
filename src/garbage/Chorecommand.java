@@ -64,71 +64,113 @@ public class Chorecommand {
 	}
 
 	private static String processRent(String full) {
+		//Initialize gson object and json reader/writer
 		Gson gson = new GsonBuilder().create();
-		ArrayList<Choreperson> ban = new ArrayList<Choreperson>();
 		JsonReader reader;
 		Writer writer;
+		
+		//Initialize array and create new tenant
+		ArrayList<Choreperson> tenants = new ArrayList<Choreperson>();
+		String name = full.split(" ",3)[1];
+		Boolean paid = Boolean.valueOf(full.split(" ",3)[2]);
+
 		try {
+			//Open JSON file to retrieve saved tenant list
 			reader = new JsonReader(new FileReader("tenants.json"));
 			Type collectionType = new TypeToken<ArrayList<Choreperson>>(){}.getType();
-			ban = gson.fromJson(reader, collectionType);
+			tenants = gson.fromJson(reader, collectionType);
 			reader.close();
 			
-			//TODO STUFF
-			
-			writer = new FileWriter("tenants.json");
-			gson.toJson(ban, writer);
-			writer.close();
+			//Update rent info assuming it can be updated
+			if(tenants != null){
+				for(int q =0; q < tenants.size(); q++){
+					if(name.equalsIgnoreCase(tenants.get(q).getName())){
+						tenants.get(q).paidRent(paid);
+					}
+				}
+				
+				//Save JSON fil with modified information
+				writer = new FileWriter("tenants.json");
+				gson.toJson(tenants, writer);
+				writer.close();	
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		return "thing";
+		return "Updated info for " + name;
 	}
 
 	private static String removeTenant(String full) {
+		//Initialize gson object and json reader/writer
 		Gson gson = new GsonBuilder().create();
-		ArrayList<Choreperson> ban = new ArrayList<Choreperson>();
 		JsonReader reader;
 		Writer writer;
+		
+		//Initialize array and create new tenant
+		ArrayList<Choreperson> tenants = new ArrayList<Choreperson>();
+		String name = full.split(" ",2)[1];
+
 		try {
+			//Open JSON file to retrieve saved tenant list
 			reader = new JsonReader(new FileReader("tenants.json"));
 			Type collectionType = new TypeToken<ArrayList<Choreperson>>(){}.getType();
-			ban = gson.fromJson(reader, collectionType);
+			tenants = gson.fromJson(reader, collectionType);
 			reader.close();
 			
-			//TODO STUFF
-			
-			writer = new FileWriter("tenants.json");
-			gson.toJson(ban, writer);
-			writer.close();
+			//Remove the person from JSON file after making sure the file isn't empty
+			if(tenants != null){
+				for(Choreperson temp: tenants){
+					if(name.equalsIgnoreCase(temp.getName())){
+						tenants.remove(temp);
+					}
+				}
+				
+				//Save JSON fil with modified information
+				writer = new FileWriter("tenants.json");
+				gson.toJson(tenants, writer);
+				writer.close();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		return "thing";
+		return "Removed " + name;
 	}
 
 	private static String addTenant(String full) {
+		
+		//Initialize gson object and json reader/writer
 		Gson gson = new GsonBuilder().create();
-		ArrayList<Choreperson> ban = new ArrayList<Choreperson>();
 		JsonReader reader;
 		Writer writer;
+		
+		//Initialize array and create new tenant
+		ArrayList<Choreperson> tenants = new ArrayList<Choreperson>();
+		String name = full.split(" ",2)[1];
+		Choreperson person = new Choreperson(name);
+
 		try {
+			//Open JSON file to retrieve saved tenant list
 			reader = new JsonReader(new FileReader("tenants.json"));
 			Type collectionType = new TypeToken<ArrayList<Choreperson>>(){}.getType();
-			ban = gson.fromJson(reader, collectionType);
+			tenants = gson.fromJson(reader, collectionType);
 			reader.close();
 			
-			//TODO STUFF
+			//add the person made earlier to JSON file after making sure the file isn't empty
+			if(tenants == null){
+				tenants = new ArrayList<Choreperson>();
+			}
+			tenants.add(person);
 			
+			//Save JSON fil with modified information
 			writer = new FileWriter("tenants.json");
-			gson.toJson(ban, writer);
+			gson.toJson(tenants, writer);
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		return "thing";
+		return "Added " + name;
 	}
 }

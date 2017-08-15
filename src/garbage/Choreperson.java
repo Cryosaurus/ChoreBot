@@ -7,7 +7,13 @@ public class Choreperson{
 	
 	public Choreperson(){
 		this.name = "TEMP";
-		this.paid = true;
+		this.paid = false;
+		this.owes = 0;
+	}
+	
+	public Choreperson(String name){
+		this.name = name;
+		this.paid = false;
 		this.owes = 0;
 	}
 	

@@ -10,6 +10,8 @@
 
 package garbage;
 
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -43,7 +45,7 @@ public class Chorecore implements IListener<MessageEvent>{
 	public static void main(String[] args) { // Main method
 		if (args.length < 1) // Needs a bot token provided
 			throw new IllegalArgumentException("This bot needs at least 1 argument!");
-
+		
 		INSTANCE = login(args[0]); // Creates the bot instance and logs it in.
 		
 		resetGarbage(1, 18, 0, 0);

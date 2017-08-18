@@ -55,12 +55,59 @@ public class Chorecommand {
         case "!chorecorebo":
         	reply = "Congratulations you found a secret command, have a chocobo. http://i.imgur.com/xi8Tvmh.png";
         	break;
+        case "!list":
+        	reply = listTenants();
+        	
+        case "!reset":
+        	reply = resetRent();
+        	break;
         default:
         	reply = "";
         	System.out.println("sadness");
         }
 		
 		return reply;
+	}
+
+	public static String resetRent() {
+		//Initialize gson object and json reader/writer
+		Gson gson = new GsonBuilder().create();
+		JsonReader reader;
+		Writer writer;
+		
+		//Initialize array and create new tenant
+		ArrayList<Choreperson> tenants = new ArrayList<Choreperson>();
+
+		try {
+			//Open JSON file to retrieve saved tenant list
+			reader = new JsonReader(new FileReader("tenants.json"));
+			Type collectionType = new TypeToken<ArrayList<Choreperson>>(){}.getType();
+			tenants = gson.fromJson(reader, collectionType);
+			reader.close();
+			
+			//add the person made earlier to JSON file after making sure the file isn't empty
+			if(tenants == null){
+				tenants = new ArrayList<Choreperson>();
+			}else{
+				for(int q = 0; q < tenants.size(); q++){
+					tenants.get(q).paidRent(false);
+				}
+			}
+			
+			//Save JSON fil with modified information
+			writer = new FileWriter("tenants.json");
+			gson.toJson(tenants, writer);
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return "All tenants marked as owing rent";
+	}
+
+	private static String listTenants() {
+		
+		return null;
 	}
 
 	private static String processRent(String full) {

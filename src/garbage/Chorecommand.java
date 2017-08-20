@@ -40,8 +40,8 @@ public class Chorecommand {
         case "!commands":
         	reply = "!add NAME - adds person to list of tenants for house\n" + 
         		  "!remove NAME - removes person from list of tenants for house\n" + 
-        		  "!rent NAME BOOL -Sets whether or not NAMe has paid rent for the month based on the value of BOOL. Requires manager privelege.";
-        	System.out.println("yay");
+        		  "!list - lists the current tenants and indicates whether they have paid or not\n" +
+        		  "!rent NAME BOOL -Sets whether or not NAMe has paid rent for the month based on the value of BOOL. Requires heightened priveledge.";
         	break;
         case "!add":
         	reply = addTenant(full);
@@ -57,7 +57,7 @@ public class Chorecommand {
         	break;
         case "!list":
         	reply = listTenants();
-        	
+        	break;
         case "!reset":
         	reply = resetRent();
         	break;
@@ -106,8 +106,32 @@ public class Chorecommand {
 	}
 
 	private static String listTenants() {
+		Gson gson = new GsonBuilder().create();
+		JsonReader reader;
 		
-		return null;
+		ArrayList<Choreperson> tenants = new ArrayList<Choreperson>();
+		String message = "";
+		
+		try {
+			reader = new JsonReader(new FileReader("tenants.json"));
+			Type collectionType = new TypeToken<ArrayList<Choreperson>>(){}.getType();
+			tenants = gson.fromJson(reader, collectionType);
+			reader.close();
+			
+			if(tenants != null){
+				for(Choreperson temp: tenants){
+					message = message + temp.getName() + " has paid " + temp.hasPaid() + "\n";
+				}
+			}else{
+				message = "No tenants found.";
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return message;
 	}
 
 	private static String processRent(String full) {

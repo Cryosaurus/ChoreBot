@@ -110,24 +110,24 @@ public class Chorecore implements IListener<MessageEvent>{
 
 	public static void resetGarbage(int dayInterval, int hour, int min, int sec){
 		
-		LocalDateTime localNow = LocalDateTime.now();
 		ZoneId currentZone = ZoneId.of("America/Los_Angeles");
+		LocalDateTime localNow = LocalDateTime.now(currentZone);
 		ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
 		ZonedDateTime zonedNext;
 		
-//		zonedNext = zonedNow.withHour(hour).withMinute(min).withSecond(sec);
-		zonedNext = zonedNow.plusHours(hour).plusMinutes(min).plusSeconds(sec); //test line
-//		if((zonedNow.compareTo(zonedNext) > 0) && (dayInterval > 0)){
-//			zonedNext = zonedNext.plusDays(dayInterval);
-//		}
+//		zonedNext = zonedNow.plusHours(hour).plusMinutes(min).plusSeconds(sec); //test line
+		zonedNext = zonedNow.withHour(hour).withMinute(min).withSecond(sec);
+		if((zonedNow.compareTo(zonedNext) > 0) && (dayInterval > 0)){
+			zonedNext = zonedNext.plusDays(dayInterval);
+		}
 		
 		Duration duration = Duration.between(zonedNow, zonedNext);
 		long initialDelay = duration.getSeconds();
 		System.out.println("Initial delay of: " + initialDelay);
 		
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);            
-//		scheduler.scheduleAtFixedRate(new Chorereminder(), initialDelay, 24*60*60, TimeUnit.SECONDS);
-		scheduler.scheduleAtFixedRate(new Chorereminder(), 60, 60, TimeUnit.SECONDS); //test line
+		scheduler.scheduleAtFixedRate(new Chorereminder(), initialDelay, 24*60*60, TimeUnit.SECONDS);
+//		scheduler.scheduleAtFixedRate(new Chorereminder(), 60, 60, TimeUnit.SECONDS); //test line
 	}
 	
 	public static void reminder(String message){

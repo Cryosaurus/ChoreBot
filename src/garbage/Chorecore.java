@@ -41,6 +41,8 @@ public class Chorecore implements IListener<MessageEvent>{
 	private static final long test1 = 317258850371633152L;
 	private static final long test2 = 340920915913211904L;
 	private static final long chore = 317154330102726656L;
+	
+	private static final long bot = 330481886352637963L;
 
 	public static void main(String[] args) { // Main method
 		if (args.length < 1) // Needs a bot token provided
@@ -80,16 +82,17 @@ public class Chorecore implements IListener<MessageEvent>{
 	public void handle(MessageEvent event) {
 		IMessage message = event.getMessage(); // Gets the message from the event object NOTE: This is not the content of the message, but the object itself
 		IChannel channel = message.getChannel(); // Gets the channel in which this message was sent.
+		Long author = event.getAuthor().getLongID();
 		
 		System.out.println(channel.getLongID());
 
 		//Before parsing commands just check if the bot is responding to itself
-		if(event.getAuthor().getName().equals("Chorebot")){
+		if(author == bot){
 			return;
 		}
 		
 		//Pass along the message to the parser so bot can see if it has to do something
-		String reply = Chorecommand.parse(message.getContent());
+		String reply = Chorecommand.parse(message.getContent(), author);
 		if(!reply.isEmpty()){
 			System.out.println(reply);
 			try {
@@ -135,7 +138,7 @@ public class Chorecore implements IListener<MessageEvent>{
 		IDiscordClient tempClient = INSTANCE.getClient();
 		try {
 			// Builds (sends) and new message in the channel that the original message was sent with the content of the original message.
-			new MessageBuilder(tempClient).withChannel(test1).withContent(message).build();
+			new MessageBuilder(tempClient).withChannel(chore).withContent(message).build();
 		} catch (RateLimitException e) { // RateLimitException thrown. The bot is sending messages too quickly!
 			System.err.print("Sending messages too quickly!");
 			e.printStackTrace();

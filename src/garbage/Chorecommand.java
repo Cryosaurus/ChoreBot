@@ -13,19 +13,18 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
 /*
- * In a proper OOP deign this should not exist
- * It's really nice C code that I made to keep clutter out of the core
- * Future refactor will hopefully find a neater implementation but
- * for now it works and this is my primary concern.
+ * Static class that contains the command parsing and the relevant actions that match the text command
  */
 public class Chorecommand {
+	
+	private static final long Snowraptor = 181630948583014400L;
 
-	public static String parse(String msg){
+	public static String parse(String msg, Long author){
 		String reply = msg.substring(0, 1);
 		
 		if (reply.equals("!")){
 			reply = msg.split(" ",2)[0];
-			reply = checkList(reply, msg);
+			reply = checkList(reply, msg, author);
 		}else{
 			reply = "";
 		}
@@ -33,7 +32,7 @@ public class Chorecommand {
 		return reply;
 	}
 	
-	private static String checkList(String check, String full){
+	private static String checkList(String check, String full, Long author){
 		String reply = "";
 		
         switch (check) {
@@ -50,7 +49,11 @@ public class Chorecommand {
         	reply = removeTenant(full);
         	break;
         case "!rent":
-        	reply = processRent(full);
+        	if (author == Snowraptor){
+        		reply = processRent(full);
+        	}else{
+        		reply = "You do have authority to perform that action.";
+        	}
         	break;
         case "!chorecorebo":
         	reply = "Congratulations you found a secret command, have a chocobo. http://i.imgur.com/xi8Tvmh.png";
@@ -194,6 +197,7 @@ public class Chorecommand {
 				for(Choreperson temp: tenants){
 					if(name.equalsIgnoreCase(temp.getName())){
 						tenants.remove(temp);
+						break;
 					}
 				}
 				

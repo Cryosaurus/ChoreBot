@@ -17,7 +17,8 @@ import com.google.gson.stream.JsonReader;
  */
 public class Chorecommand {
 	
-	private static final long Snowraptor = 181630948583014400L;
+	private static final long SNOWRAPTOR = 181630948583014400L;
+	private static final int MONTHLY_RATE = 500;
 
 	public static String parse(String msg, Long author){
 		String reply = msg.substring(0, 1);
@@ -40,7 +41,7 @@ public class Chorecommand {
         	reply = "!add NAME - adds person to list of tenants for house\n" + 
         		  "!remove NAME - removes person from list of tenants for house\n" + 
         		  "!list - lists the current tenants and indicates whether they have paid or not\n" +
-        		  "!rent NAME BOOL -Sets whether or not NAMe has paid rent for the month based on the value of BOOL. Requires heightened priveledge.";
+        		  "!rent NAME AMOUNT - Register change of rent balance in the value of AMOUNT. Negative AMOUNT will increase the amount owed. Requires heightened priveledge.";
         	break;
         case "!add":
         	reply = addTenant(full);
@@ -49,7 +50,7 @@ public class Chorecommand {
         	reply = removeTenant(full);
         	break;
         case "!rent":
-        	if (author == Snowraptor){
+        	if (author == SNOWRAPTOR){
         		reply = processRent(full);
         	}else{
         		reply = "You do have authority to perform that action.";
@@ -94,6 +95,7 @@ public class Chorecommand {
 			}else{
 				for(int q = 0; q < tenants.size(); q++){
 					tenants.get(q).paidRent(false);
+					tenants.get(q).setOwes(tenants.get(q).getOwes() + MONTHLY_RATE);
 				}
 			}
 			
@@ -123,14 +125,13 @@ public class Chorecommand {
 			
 			if(tenants != null){
 				for(Choreperson temp: tenants){
-					message = message + temp.getName() + " has paid " + temp.hasPaid() + "\n";
+					message = message + temp.getName() + " owes " + temp.getOwes() + "\n";
 				}
 			}else{
 				message = "No tenants found.";
 			}
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -146,7 +147,8 @@ public class Chorecommand {
 		//Initialize array and create new tenant
 		ArrayList<Choreperson> tenants = new ArrayList<Choreperson>();
 		String name = full.split(" ",3)[1];
-		Boolean paid = Boolean.valueOf(full.split(" ",3)[2]);
+		Integer paid = Integer.valueOf(full.split(" ",3)[2]);
+		Integer owes = 0;
 
 		try {
 			//Open JSON file to retrieve saved tenant list
@@ -158,8 +160,15 @@ public class Chorecommand {
 			//Update rent info assuming it can be updated
 			if(tenants != null){
 				for(int q =0; q < tenants.size(); q++){
+					owes = 0;
 					if(name.equalsIgnoreCase(tenants.get(q).getName())){
-						tenants.get(q).paidRent(paid);
+						owes = tenants.get(q).getOwes() - paid;
+						tenants.get(q).setOwes(owes);
+						if (owes > 0){
+							tenants.get(q).paidRent(false);
+						}else{
+							tenants.get(q).paidRent(true);
+						}
 					}
 				}
 				

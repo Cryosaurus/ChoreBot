@@ -10,8 +10,6 @@
 
 package garbage;
 
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -38,8 +36,8 @@ public class Chorecore implements IListener<MessageEvent>{
 	private IDiscordClient client; // The instance of the discord client.
 	private EventDispatcher dispatcher;
 	
-	private static final long test1 = 317258850371633152L;
-	private static final long test2 = 340920915913211904L;
+//	private static final long test1 = 317258850371633152L;
+//	private static final long test2 = 340920915913211904L;
 	private static final long chore = 317154330102726656L;
 	
 	private static final long bot = 330481886352637963L;

@@ -56,6 +56,9 @@ public class Chorecommand {
         		reply = "You do have authority to perform that action.";
         	}
         	break;
+        case "!sandwhich":
+        	reply = ":hamburger:";
+        	break;
         case "!chorecorebo":
         	reply = "Congratulations you found a secret command, have a chocobo. http://i.imgur.com/xi8Tvmh.png";
         	break;

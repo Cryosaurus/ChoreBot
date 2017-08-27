@@ -38,7 +38,7 @@ public class Chorecommand {
 		
         switch (check) {
         case "!commands":
-        	reply = "!add NAME - adds person to list of tenants for house\n" + 
+        	reply = "!add NAME USERNAME ID - adds person to list of tenants for house. All information is required.\n" + 
         		  "!remove NAME - removes person from list of tenants for house\n" + 
         		  "!list - lists the current tenants and indicates whether they have paid or not\n" +
         		  "!rent NAME AMOUNT - Register change of rent balance in the value of AMOUNT. Negative AMOUNT will increase the amount owed. Requires heightened priveledge.";
@@ -234,9 +234,16 @@ public class Chorecommand {
 		
 		//Initialize array and create new tenant
 		ArrayList<Choreperson> tenants = new ArrayList<Choreperson>();
-		String name = full.split(" ",2)[1];
-		Choreperson person = new Choreperson(name);
-
+		String[] info;
+		Choreperson person;
+		try{
+			info = full.split(" ",4); // !add NAME USERNAME ID
+			person = new Choreperson(info[1], info[2], Long.parseLong(info[3]));
+		} catch (IndexOutOfBoundsException e){
+			e.printStackTrace();
+			return "Too few arguements for !add command";
+		}
+		
 		try {
 			//Open JSON file to retrieve saved tenant list
 			reader = new JsonReader(new FileReader("tenants.json"));
@@ -258,6 +265,6 @@ public class Chorecommand {
 			e.printStackTrace();
 		}
 		
-		return "Added " + name;
+		return "Added " + info[1];
 	}
 }

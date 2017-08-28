@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import com.google.gson.Gson;
@@ -24,25 +23,23 @@ public class Chorereminder implements Runnable {
 		
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"));
 		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
-		String message = "";
-		String names = "";
-
+		String pubMes = "";
 		//Weekly garbage day warning
 		if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY){
 			System.out.println("Starting garbage reminder...");
-			message  = message + "It's time to take out the garbage.\n";
+			pubMes  = pubMes + "It's time to take out the garbage.\n";
 		}
 		
 		//Early warning for rent
 		if(dayOfMonth == 25){
 			System.out.println("Starting early rent warning...");
-			message  = message + "Reminder that rent will be due soon.\n";
+			pubMes  = pubMes + "Reminder that rent will be due soon.\n";
 		}
 		
 		//Either print first reminder for rent or put together the daily reminder
 		if(dayOfMonth == 1){
 			System.out.println("First day of month rent reminder...");
-			message  = message + "Rent is now due. Daily reminders will be issued until it is collected.\n";
+			pubMes  = pubMes + "Rent is now due. Daily reminders will be issued until it is collected.\n";
 			Chorecommand.resetRent();
 		}else{
 			try {
@@ -54,22 +51,16 @@ public class Chorereminder implements Runnable {
 				if(tenants != null){
 					for(Choreperson temp: tenants){
 						if(!temp.hasPaid()){
-							names = names + temp.getName() + "\n";
+							Chorecore.privateReminder("You still owe " + temp.getOwes() + " in rent", temp.getId());
 						}
 					}
 				}
 				
-				if (!names.isEmpty()){
-					message = message + "Rent is still owed by the following people for the month of " +
-							  cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH) + ":\n" + names;	
-				}
-				
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		
-		Chorecore.reminder(message);	
+		Chorecore.groupReminder(pubMes);	
 	}
 }

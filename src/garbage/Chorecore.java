@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +26,8 @@ import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IPrivateChannel;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
@@ -63,7 +66,7 @@ public class Chorecore implements IListener<MessageEvent>{
 
 	public static Chorecore login(String token) {
 		Chorecore bot = null; // Initializing the bot variable
-
+		
 		ClientBuilder builder = new ClientBuilder(); // Creates a new client builder instance
 		builder.withToken(token); // Sets the bot token for the client
 		try {
@@ -131,12 +134,36 @@ public class Chorecore implements IListener<MessageEvent>{
 //		scheduler.scheduleAtFixedRate(new Chorereminder(), 60, 60, TimeUnit.SECONDS); //test line
 	}
 	
-	public static void reminder(String message){
+	public static void groupReminder(String message){
 		//Workaround for the static problem
 		IDiscordClient tempClient = INSTANCE.getClient();
 		try {
 			// Builds (sends) and new message in the channel that the original message was sent with the content of the original message.
 			new MessageBuilder(tempClient).withChannel(chore).withContent(message).build();
+		} catch (RateLimitException e) { // RateLimitException thrown. The bot is sending messages too quickly!
+			System.err.print("Sending messages too quickly!");
+			e.printStackTrace();
+		} catch (DiscordException e) { // DiscordException thrown. Many possibilities. Use getErrorMessage() to see what went wrong.
+			System.err.print(e.getErrorMessage()); // Print the error message sent by Discord
+			e.printStackTrace();
+		} catch (MissingPermissionsException e) { // MissingPermissionsException thrown. The bot doesn't have permission to send the message!
+			System.err.print("Missing permissions for channel!");
+			e.printStackTrace();
+		}
+	}
+	
+	public static void privateReminder(String message, long id){
+		IDiscordClient tempClient = INSTANCE.getClient();
+		try {
+			// Builds (sends) and new message in the channel that the original message was sent with the content of the original message.
+			List<IUser> users = tempClient.getChannelByID(chore).getUsersHere();
+			for (IUser user: users){
+				if(user.getLongID() == id){
+					IPrivateChannel dm = tempClient.getOrCreatePMChannel(user);
+					new MessageBuilder(tempClient).withChannel(dm).withContent(message).build();
+					break;
+				}
+			}
 		} catch (RateLimitException e) { // RateLimitException thrown. The bot is sending messages too quickly!
 			System.err.print("Sending messages too quickly!");
 			e.printStackTrace();

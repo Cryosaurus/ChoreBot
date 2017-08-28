@@ -9,18 +9,18 @@ public class Choreperson{
 	
 	public Choreperson(){
 		this.name = "TEMP";
-		this.username = "TEMP";
+		this.setUsername("TEMP");
 		this.paid = false;
 		this.owes = 0;
-		this.id = 0L;
+		this.setId(0L);
 	}
 	
 	public Choreperson(String name, String username, long id){
 		this.name = name;
-		this.username = username;
+		this.setUsername(username);
 		this.paid = false;
 		this.owes = 0;
-		this.id = id;
+		this.setId(id);
 	}
 	
 	public String getName() {
@@ -40,6 +40,22 @@ public class Choreperson{
 	}
 	public void setOwes(int owes) {
 		this.owes = owes;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 	@Override

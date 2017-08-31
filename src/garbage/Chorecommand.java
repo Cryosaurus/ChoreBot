@@ -65,8 +65,8 @@ public class Chorecommand {
         case "!list":
         	reply = listTenants();
         	break;
-        case "!reset":
-        	reply = resetRent();
+        case "!addmonth":
+        	reply = addMonthOfRent();
         	break;
         default:
         	reply = "";
@@ -76,166 +76,121 @@ public class Chorecommand {
 		return reply;
 	}
 
-	public static String resetRent() {
-		//Initialize gson object and json reader/writer
-		Gson gson = new GsonBuilder().create();
-		JsonReader reader;
-		Writer writer;
+	public static String addMonthOfRent() {
 		
-		//Initialize array and create new tenant
-		ArrayList<Choreperson> tenants = new ArrayList<Choreperson>();
-
-		try {
-			//Open JSON file to retrieve saved tenant list
-			reader = new JsonReader(new FileReader("tenants.json"));
-			Type collectionType = new TypeToken<ArrayList<Choreperson>>(){}.getType();
-			tenants = gson.fromJson(reader, collectionType);
-			reader.close();
-			
-			//add the person made earlier to JSON file after making sure the file isn't empty
-			if(tenants == null){
-				tenants = new ArrayList<Choreperson>();
-			}else{
-				for(int q = 0; q < tenants.size(); q++){
-					tenants.get(q).paidRent(false);
-					tenants.get(q).setOwes(tenants.get(q).getOwes() + MONTHLY_RATE);
-				}
+		ArrayList<Choreperson> tenants =  getTenantsFromJSON();
+		
+		if(tenants == null){
+			//Found an empty file so add a template person
+			tenants = new ArrayList<Choreperson>();
+		}else{
+			for(int q = 0; q < tenants.size(); q++){
+				tenants.get(q).paidRent(false);
+				tenants.get(q).setOwes(tenants.get(q).getOwes() + MONTHLY_RATE);
 			}
-			
-			//Save JSON fil with modified information
-			writer = new FileWriter("tenants.json");
-			gson.toJson(tenants, writer);
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+		
+		saveTenantsToJSON(tenants);
 		
 		return "All tenants marked as owing rent";
 	}
 
 	private static String listTenants() {
-		Gson gson = new GsonBuilder().create();
-		JsonReader reader;
 		
-		ArrayList<Choreperson> tenants = new ArrayList<Choreperson>();
+		ArrayList<Choreperson> tenants = getTenantsFromJSON();
 		String message = "";
-		
-		try {
-			reader = new JsonReader(new FileReader("tenants.json"));
-			Type collectionType = new TypeToken<ArrayList<Choreperson>>(){}.getType();
-			tenants = gson.fromJson(reader, collectionType);
-			reader.close();
 			
-			if(tenants != null){
-				for(Choreperson temp: tenants){
-					message = message + temp.getName() + " owes " + temp.getOwes() + "\n";
-				}
-			}else{
-				message = "No tenants found.";
+		if(tenants != null){
+			for(Choreperson temp: tenants){
+				message = message + temp.getName() + " owes " + temp.getOwes() + "\n";
 			}
-			
-		} catch (IOException e) {
-			e.printStackTrace();
+		}else{
+			message = "No tenants found.";
 		}
 
 		return message;
 	}
 
 	private static String processRent(String full) {
-		//Initialize gson object and json reader/writer
-		Gson gson = new GsonBuilder().create();
-		JsonReader reader;
-		Writer writer;
 		
-		//Initialize array and create new tenant
-		ArrayList<Choreperson> tenants = new ArrayList<Choreperson>();
-		String name = full.split(" ",3)[1];
-		Integer paid = Integer.valueOf(full.split(" ",3)[2]);
+		ArrayList<Choreperson> tenants = getTenantsFromJSON();
+		String message = "";
+		String name = "";
+		Integer paid = 0;
 		Integer owes = 0;
-
-		try {
-			//Open JSON file to retrieve saved tenant list
-			reader = new JsonReader(new FileReader("tenants.json"));
-			Type collectionType = new TypeToken<ArrayList<Choreperson>>(){}.getType();
-			tenants = gson.fromJson(reader, collectionType);
-			reader.close();
+		
+		//Parse arguements and try to determine who has paid
+		try{
+			String fullSplit[] = full.split(" ",3);
+			name = fullSplit[1];
+			paid = Integer.valueOf(fullSplit[2]);
+		} catch (IndexOutOfBoundsException e){
+			e.printStackTrace();
+			return "Too few arguements for !rent command";
+		}
 			
-			//Update rent info assuming it can be updated
-			if(tenants != null){
-				for(int q =0; q < tenants.size(); q++){
-					owes = 0;
-					if(name.equalsIgnoreCase(tenants.get(q).getName())){
-						owes = tenants.get(q).getOwes() - paid;
-						tenants.get(q).setOwes(owes);
-						if (owes > 0){
-							tenants.get(q).paidRent(false);
-						}else{
-							tenants.get(q).paidRent(true);
-						}
+		if(tenants == null){
+			message = "Cannot process rent, no tenants found";
+		}else{
+			for(int q =0; q < tenants.size(); q++){
+				owes = 0;
+				if(name.equalsIgnoreCase(tenants.get(q).getName())){
+					owes = tenants.get(q).getOwes() - paid;
+					tenants.get(q).setOwes(owes);
+					if (owes > 0){
+						tenants.get(q).paidRent(false);
+					}else{
+						tenants.get(q).paidRent(true);
 					}
 				}
-				
-				//Save JSON fil with modified information
-				writer = new FileWriter("tenants.json");
-				gson.toJson(tenants, writer);
-				writer.close();	
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			
+			message = "Updated info for " + name;
+			
+			saveTenantsToJSON(tenants);
 		}
+				
 		
-		return "Updated info for " + name;
+		return message;
 	}
 
 	private static String removeTenant(String full) {
-		//Initialize gson object and json reader/writer
-		Gson gson = new GsonBuilder().create();
-		JsonReader reader;
-		Writer writer;
 		
-		//Initialize array and create new tenant
-		ArrayList<Choreperson> tenants = new ArrayList<Choreperson>();
-		String name = full.split(" ",2)[1];
-
-		try {
-			//Open JSON file to retrieve saved tenant list
-			reader = new JsonReader(new FileReader("tenants.json"));
-			Type collectionType = new TypeToken<ArrayList<Choreperson>>(){}.getType();
-			tenants = gson.fromJson(reader, collectionType);
-			reader.close();
-			
-			//Remove the person from JSON file after making sure the file isn't empty
-			if(tenants != null){
-				for(Choreperson temp: tenants){
-					if(name.equalsIgnoreCase(temp.getName())){
-						tenants.remove(temp);
-						break;
-					}
-				}
-				
-				//Save JSON fil with modified information
-				writer = new FileWriter("tenants.json");
-				gson.toJson(tenants, writer);
-				writer.close();
-			}
-		} catch (IOException e) {
+		ArrayList<Choreperson> tenants = getTenantsFromJSON();
+		String message = "";
+		String name = "";
+		
+		//Attempt to parse command for relevant info
+		try{
+			name = full.split(" ",2)[1];
+		} catch (IndexOutOfBoundsException e){
 			e.printStackTrace();
+			return "Too few arguements for !remove command";
 		}
 		
-		return "Removed " + name;
+		if(tenants == null){
+			message = "Cannot remove tenant, no tenants found";
+		}else{
+			for(Choreperson temp: tenants){
+				if(name.equalsIgnoreCase(temp.getName())){
+					tenants.remove(temp);
+					message = "Removed " + name;
+					break;
+				}
+			}
+		}
+
+		return message;
 	}
 
 	private static String addTenant(String full) {
 		
-		//Initialize gson object and json reader/writer
-		Gson gson = new GsonBuilder().create();
-		JsonReader reader;
-		Writer writer;
-		
 		//Initialize array and create new tenant
-		ArrayList<Choreperson> tenants = new ArrayList<Choreperson>();
+		ArrayList<Choreperson> tenants = getTenantsFromJSON();
 		String[] info;
 		Choreperson person;
+		
+		//Parse arguements and try to create a new person
 		try{
 			info = full.split(" ",4); // !add NAME USERNAME ID
 			person = new Choreperson(info[1], info[2], Long.parseLong(info[3]));
@@ -244,27 +199,45 @@ public class Chorecommand {
 			return "Too few arguements for !add command";
 		}
 		
-		try {
+		//add the person made earlier to JSON file after making sure the file isn't empty
+		if(tenants == null){
+			tenants = new ArrayList<Choreperson>();
+		}
+		tenants.add(person);
+		
+		saveTenantsToJSON(tenants);
+		
+		return "Added " + info[1];
+	}
+	
+	private static ArrayList<Choreperson> getTenantsFromJSON(){
+		Gson gson = new GsonBuilder().create();
+		JsonReader reader;
+		ArrayList<Choreperson> tenants = new ArrayList<Choreperson>();
+		
+		try{
 			//Open JSON file to retrieve saved tenant list
 			reader = new JsonReader(new FileReader("tenants.json"));
 			Type collectionType = new TypeToken<ArrayList<Choreperson>>(){}.getType();
 			tenants = gson.fromJson(reader, collectionType);
 			reader.close();
-			
-			//add the person made earlier to JSON file after making sure the file isn't empty
-			if(tenants == null){
-				tenants = new ArrayList<Choreperson>();
-			}
-			tenants.add(person);
-			
-			//Save JSON fil with modified information
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return tenants;
+	}
+	
+	private static void saveTenantsToJSON(ArrayList<Choreperson> tenants){
+		Gson gson = new GsonBuilder().create();
+		Writer writer;
+		
+		try{
 			writer = new FileWriter("tenants.json");
 			gson.toJson(tenants, writer);
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		return "Added " + info[1];
 	}
 }

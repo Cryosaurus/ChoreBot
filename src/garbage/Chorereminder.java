@@ -40,7 +40,7 @@ public class Chorereminder implements Runnable {
 		if(dayOfMonth == 1){
 			System.out.println("First day of month rent reminder...");
 			pubMes  = pubMes + "Rent is now due. Daily reminders will be issued until it is collected.\n";
-			Chorecommand.resetRent();
+			Chorecommand.addMonthOfRent();
 		}else{
 			try {
 				reader = new JsonReader(new FileReader("tenants.json"));

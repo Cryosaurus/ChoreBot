@@ -19,8 +19,18 @@ public class Chorecommand {
 	
 	private static final long SNOWRAPTOR = 181630948583014400L;
 	private static final int MONTHLY_RATE = 500;
+	
+	Boolean hourlyEnabled;
+	
+	public Chorecommand(){
+		hourlyEnabled = false;
+	}
+	
+	public void toggleHourly(Boolean enableHourlyReminders){
+		hourlyEnabled = enableHourlyReminders;
+	}
 
-	public static String parse(String msg, Long author){
+	public String parse(String msg, Long author){
 		String reply = msg.substring(0, 1);
 		
 		if (reply.equals("!")){
@@ -33,7 +43,7 @@ public class Chorecommand {
 		return reply;
 	}
 	
-	private static String checkList(String check, String full, Long author){
+	private String checkList(String check, String full, Long author){
 		String reply = "";
 		
         switch (check) {

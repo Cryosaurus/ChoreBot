@@ -36,6 +36,7 @@ import sx.blah.discord.util.RateLimitException;
 public class Chorecore implements IListener<MessageEvent>{
 
 	public static Chorecore INSTANCE; // Singleton instance of the bot.
+	private static Chorecommand command;
 	private IDiscordClient client; // The instance of the discord client.
 	private EventDispatcher dispatcher;
 	
@@ -50,8 +51,9 @@ public class Chorecore implements IListener<MessageEvent>{
 			throw new IllegalArgumentException("This bot needs at least 1 argument!");
 		
 		INSTANCE = login(args[0]); // Creates the bot instance and logs it in.
+		command = new Chorecommand();
 		
-		resetGarbage(1, 18, 0, 0);
+		startDailyReminders(1, 18, 0, 0);
 	}
 
 	public Chorecore(IDiscordClient client) {
@@ -93,7 +95,7 @@ public class Chorecore implements IListener<MessageEvent>{
 		}
 		
 		//Pass along the message to the parser so bot can see if it has to do something
-		String reply = Chorecommand.parse(message.getContent(), author);
+		String reply = command.parse(message.getContent(), author);
 		if(!reply.isEmpty()){
 			System.out.println(reply);
 			try {
@@ -112,7 +114,7 @@ public class Chorecore implements IListener<MessageEvent>{
 		}
 	}
 
-	public static void resetGarbage(int dayInterval, int hour, int min, int sec){
+	public static void startDailyReminders(int dayInterval, int hour, int min, int sec){
 		
 		ZoneId currentZone = ZoneId.of("America/Los_Angeles");
 		LocalDateTime localNow = LocalDateTime.now(currentZone);
@@ -130,7 +132,7 @@ public class Chorecore implements IListener<MessageEvent>{
 		System.out.println("Initial delay of: " + initialDelay);
 		
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);            
-		scheduler.scheduleAtFixedRate(new Chorereminder(), initialDelay, 24*60*60, TimeUnit.SECONDS);
+		scheduler.scheduleAtFixedRate(new Chorereminder.Daily(), initialDelay, 24*60*60, TimeUnit.SECONDS);
 //		scheduler.scheduleAtFixedRate(new Chorereminder(), 60, 60, TimeUnit.SECONDS); //test line
 	}
 	

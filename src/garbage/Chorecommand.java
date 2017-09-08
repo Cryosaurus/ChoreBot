@@ -20,17 +20,27 @@ public class Chorecommand {
 	private static final long SNOWRAPTOR = 181630948583014400L;
 	private static final int MONTHLY_RATE = 500;
 	
-	Boolean hourlyEnabled;
+	private static Boolean hourlyEnabled;
+    private static final Chorecommand INSTANCE = new Chorecommand();
+
+    private Chorecommand() {
+    	hourlyEnabled = false;
+    }
+
+    public static Chorecommand getInstance() {
+        return INSTANCE;
+    }
 	
-	public Chorecommand(){
-		hourlyEnabled = false;
-	}
-	
-	public void toggleHourly(Boolean enableHourlyReminders){
+	//These could probably use some better names but I leave that for me to figure out at 3AM one night instead of sleep
+	public static void enableHourly(Boolean enableHourlyReminders){
 		hourlyEnabled = enableHourlyReminders;
 	}
+	
+	public static Boolean hourlyEnabled(){
+		return hourlyEnabled;
+	}
 
-	public String parse(String msg, Long author){
+	public static String parse(String msg, Long author){
 		String reply = msg.substring(0, 1);
 		
 		if (reply.equals("!")){
@@ -43,7 +53,7 @@ public class Chorecommand {
 		return reply;
 	}
 	
-	private String checkList(String check, String full, Long author){
+	private static String checkList(String check, String full, Long author){
 		String reply = "";
 		
         switch (check) {
@@ -77,6 +87,14 @@ public class Chorecommand {
         	break;
         case "!addmonth":
         	reply = addMonthOfRent();
+        	break;
+        case "!garbage":
+        	if (hourlyEnabled){
+        		reply = "Good job, someone finally did it.";
+        		enableHourly(false);
+        	}else{
+        		reply = "I applaud your enthusiasm but either its not time or someone already did it. Or I'm confused, that could also be it";
+        	}
         	break;
         default:
         	reply = "";

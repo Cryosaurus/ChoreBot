@@ -36,7 +36,6 @@ import sx.blah.discord.util.RateLimitException;
 public class Chorecore implements IListener<MessageEvent>{
 
 	public static Chorecore INSTANCE; // Singleton instance of the bot.
-	private static Chorecommand command;
 	private IDiscordClient client; // The instance of the discord client.
 	private EventDispatcher dispatcher;
 	
@@ -51,7 +50,6 @@ public class Chorecore implements IListener<MessageEvent>{
 			throw new IllegalArgumentException("This bot needs at least 1 argument!");
 		
 		INSTANCE = login(args[0]); // Creates the bot instance and logs it in.
-		command = new Chorecommand();
 		
 		startDailyReminders(1, 18, 0, 0);
 	}
@@ -95,7 +93,7 @@ public class Chorecore implements IListener<MessageEvent>{
 		}
 		
 		//Pass along the message to the parser so bot can see if it has to do something
-		String reply = command.parse(message.getContent(), author);
+		String reply = Chorecommand.parse(message.getContent(), author);
 		if(!reply.isEmpty()){
 			System.out.println(reply);
 			try {
@@ -133,7 +131,7 @@ public class Chorecore implements IListener<MessageEvent>{
 		
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);            
 		scheduler.scheduleAtFixedRate(new Chorereminder.Daily(), initialDelay, 24*60*60, TimeUnit.SECONDS);
-//		scheduler.scheduleAtFixedRate(new Chorereminder(), 60, 60, TimeUnit.SECONDS); //test line
+//		scheduler.scheduleAtFixedRate(new Chorereminder.Daily(), 30, 500, TimeUnit.SECONDS); //test line
 	}
 	
 	public static void groupReminder(String message){

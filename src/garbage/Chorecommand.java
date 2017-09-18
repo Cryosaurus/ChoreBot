@@ -58,7 +58,8 @@ public class Chorecommand {
 		
         switch (check) {
         case "!commands":
-        	reply = "!add NAME USERNAME ID - adds person to list of tenants for house. All information is required.\n" + 
+        	reply = "!garbage - Tells chorebot to stop issuing garbage reminders on Thursday.\n" +
+        	      "!add NAME USERNAME ID - adds person to list of tenants for house. All information is required.\n" + 
         		  "!remove NAME - removes person from list of tenants for house\n" + 
         		  "!list - lists the current tenants and indicates whether they have paid or not\n" +
         		  "!rent NAME AMOUNT - Register change of rent balance in the value of AMOUNT. Negative AMOUNT will increase the amount owed. Requires heightened priveledge.";

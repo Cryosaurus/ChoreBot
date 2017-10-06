@@ -94,6 +94,9 @@ public class Chorereminder{
 				}
 
 			}
+			if(!pubMes.isEmpty()){
+				pubMes = "@everyone " + pubMes;
+			}
 			
 			Chorecore.groupReminder(pubMes);	
 		}

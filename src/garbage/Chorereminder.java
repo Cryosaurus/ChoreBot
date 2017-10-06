@@ -26,7 +26,7 @@ public class Chorereminder{
 			try {
 				TimeUnit.HOURS.sleep(1);
 				while(Chorecommand.hourlyEnabled()){
-						Chorecore.groupReminder("I won't shut up until someone takes out the garbage.");
+						Chorecore.groupReminder("Please take out the garbage.");
 						TimeUnit.HOURS.sleep(1);
 				}
 			} catch (InterruptedException e) {

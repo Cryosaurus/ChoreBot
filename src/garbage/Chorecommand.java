@@ -91,7 +91,7 @@ public class Chorecommand {
         	break;
         case "!garbage":
         	if (hourlyEnabled){
-        		reply = "Good job, someone finally did it.";
+        		reply = "Thanks you for taking out the garbage."; //its about time
         		enableHourly(false);
         	}else{
         		reply = "I applaud your enthusiasm but either its not time or someone already did it. Or I'm confused, that could also be it";
